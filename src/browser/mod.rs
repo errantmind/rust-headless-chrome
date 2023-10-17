@@ -312,7 +312,7 @@ impl Browser {
             trace!("Starting browser's event handling loop");
             loop {
                 match shutdown_rx.try_recv() {
-                    Ok(_) | Err(TryRecvError::Disconnected) => {
+                    Ok(()) | Err(TryRecvError::Disconnected) => {
                         info!("Browser event loop received shutdown message");
                         break;
                     }
@@ -482,12 +482,12 @@ pub fn default_executable() -> Result<std::path::PathBuf, String> {
         if let Some(path) = get_chrome_path_from_registry() {
             if path.exists() {
                 return Ok(path);
-            } else {
-                for path in &[r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"][..] {
-                    if std::path::Path::new(path).exists() {
-                        return Ok(path.into());
-                    }
-                }
+            }
+        }
+
+        for path in &[r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"][..] {
+            if std::path::Path::new(path).exists() {
+                return Ok(path.into());
             }
         }
     }
